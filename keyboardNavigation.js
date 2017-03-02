@@ -100,10 +100,22 @@ return keymap;
 } // processKeymap
 
 function applyAria ($container, type) {
+var name;
+
 if (type === "list") {
 $container.attr ("role", "listbox")
 .children ().attr ({role: "option", tabindex: "-1"});
+
+} else if (type === "tree") {
+name = $container[0].nodeName.toLowerCase();
+$container.find (name).attr ("role", "group");
+name = $container.children().first()[0].nodeName.toLowerCase();
+$container.find (name).attr ("role", "treeitem");
+$container.find ("[role=treeitem] > [role=group]").attr ("aria-expanded", "false");
+$container.attr ("role", "tree");
+
 } // if
+
 } // applyAria
 
 /// default actions

@@ -8,6 +8,19 @@
 <body>
 <h1>Test</h1>
 
+<ul class="tree"><li>
+<button>1</button>
+</li><li>
+<button>2</button>
+<ul><li>
+<button>2.1</button>
+</li><li>
+<button>2.2</button>
+</li></ul>
+</li><li>
+<button>3</button>
+</li></ul>
+
 <ul><li>
 one
 </li><li>
@@ -26,6 +39,7 @@ four
 <script src="keyboardNavigation.js"></script>
 <script>
 keyboardNavigation ($("ul"));
+keyboardNavigation ($(".tree"), {type: "tree"});
 
 alert ("loaded");
 </script>
