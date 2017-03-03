@@ -21,7 +21,7 @@
 <span>3</span>
 </li></ul>
 
-<ul><li>
+<ul class="listbox"><li>
 one
 </li><li>
 two
@@ -38,8 +38,15 @@ four
 <script src="debug.js"></script>
 <script src="keyboardNavigation.js"></script>
 <script>
-keyboardNavigation ($("ul"));
-keyboardNavigation ($(".tree"), {type: "tree"});
+keyboardNavigation ($(".listbox"));
+keyboardNavigation ($(".tree"), {
+type: "tree",
+
+keymap: {
+next: ["ArrowDown"], prev: ["ArrowUp"],
+up: ["ArrowLeft"], down: ["ArrowRight"]
+} // keymap
+});
 
 alert ("loaded");
 </script>

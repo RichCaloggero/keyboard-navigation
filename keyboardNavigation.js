@@ -1,4 +1,5 @@
 "use strict";
+var xxx;
 
 function keyboardNavigation ($containers, options) {
 var defaultOptions = {
@@ -16,14 +17,16 @@ next: nextItem,
 prev: prevItem,
 first: function () {},
 last: function () {},
-up: function () {},
-down: function () {},
+up: upLevel,
+down: downLevel,
 out: function () {}
 } // actions
 }; // defaultOptions
-options = jQuery.extend (defaultOptions, (options || {}));
+
+options = jQuery.extend ({}, defaultOptions, (options || {}));
 options.keymap = processKeymap (options.keymap);
 //debug ("keymap: ", options.keymap);
+//debug ("applying to ", $containers.length, " containers");
 
 $containers.each (function () {
 var $container = $(this);
@@ -31,14 +34,28 @@ var name = $container[0].nodeName.toLowerCase();
 
 
 if (name === "ul" || name === "div") {
+if (name === "ul") $("ul", $container).addBack().css ("list-style-type", "none");
 applyAria ($container, options.type);
 current ($container, $container.children().first());
 
-$container.on ("keydown", "[role=option], li, span", function (e) {
-var action = options.actions[
-options.keymap[e.key]
-]; // action
-//debug ("key: ", e.key);
+//debug ("applying keyboard event handlers to ", $container.attr("role"));
+$container.on ("keydown",
+ "[role=option], [role=treeitem], [role=menuitem]",
+function (e) {
+var key = e.key || e.which || e.keyCode;
+var actionName = options.keymap[key];
+var action = options.actions[actionName]; // action
+
+if (! key) {
+alert ("invalid key: " + key);
+throw new Error ("invalid key: " + key);
+} // if
+
+if (! actionName) {
+alert ("no action for key " + key);
+throw new Error ("no action for key " + key);
+} // if
+
 if (! action) return true;
 
 if (action instanceof Function) {
@@ -126,5 +143,18 @@ return $(this).next();
 function prevItem () {
 return $(this).prev();
 } // prevItem
+
+function upLevel () {
+var $root = $(this).parent().closest ("[role=tree]");
+var $up = $(this).parent().closest("[role=treeitem]");
+if (!$up || !$up.length || !jQuery.contains($root[0], $up[0])) return $(this);
+return $up;
+} // upLevel
+
+function downLevel () {
+var $down = $(this).find("[role=group]:first > [role=treeitem]:first");
+if (!$down || !$down.length) return $(this);
+return $down;
+} // downLevel
 
 } // keyboardNavigation
