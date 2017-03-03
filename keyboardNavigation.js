@@ -51,11 +51,6 @@ alert ("invalid key: " + key);
 throw new Error ("invalid key: " + key);
 } // if
 
-if (! actionName) {
-alert ("no action for key " + key);
-throw new Error ("no action for key " + key);
-} // if
-
 if (! action) return true;
 
 if (action instanceof Function) {
