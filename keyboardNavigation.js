@@ -31,9 +31,6 @@ var name = $container[0].nodeName.toLowerCase();
 
 
 if (name === "ul" || name === "div") {
-$container.children().attr ({
-tabindex: "-1"
-});
 applyAria ($container, options.type);
 current ($container, $container.children().first());
 
@@ -72,12 +69,12 @@ return $newNode;
 
 function current ($container, $node) {
 if (!$node || !$node.length) {
-return $container.find ("[aria-selected=true], [tabindex=0]");
+return $container.find ("[tabindex=0]");
 
 } else {
-$container.find("[aria-selected=true], [tabindex=0]").attr("tabindex", "-1").removeAttr ("aria-selected");
+$container.find("[tabindex=0]").removeAttr("tabindex");
 $node.attr ({
-"aria-selected": "true", tabindex: "0"
+tabindex: "0"
 });
 return $node;
 } // if
@@ -100,19 +97,22 @@ return keymap;
 } // processKeymap
 
 function applyAria ($container, type) {
-var name;
+var name, $groups, $branches, $hasChildren;
 
 if (type === "list") {
 $container.attr ("role", "listbox")
-.children ().attr ({role: "option", tabindex: "-1"});
+.children ().attr ({role: "option"});
 
 } else if (type === "tree") {
 name = $container[0].nodeName.toLowerCase();
-$container.find (name).attr ("role", "group");
+$groups = $container.find (name).attr ("role", "group");
 name = $container.children().first()[0].nodeName.toLowerCase();
-$container.find (name).attr ("role", "treeitem");
-$container.find ("[role=treeitem] > [role=group]").attr ("aria-expanded", "false");
+$branches = $container.find (name).attr ("role", "treeitem");
 $container.attr ("role", "tree");
+
+// add aria-expanded to nodes only if they are not leaf nodes
+$hasChildren = $branches.has("[role=group]");
+$hasChildren.attr ("aria-expanded", "false");
 
 } // if
 
