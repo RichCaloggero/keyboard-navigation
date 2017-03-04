@@ -1,5 +1,4 @@
 "use strict";
-var xxx;
 
 function keyboardNavigation ($containers, options) {
 var defaultOptions = {
@@ -36,9 +35,9 @@ var name = $container[0].nodeName.toLowerCase();
 if (name === "ul" || name === "div") {
 if (name === "ul") $("ul", $container).addBack().css ("list-style-type", "none");
 applyAria ($container, options.type);
-current ($container, $container.children().first());
+defineSelection ();
 
-//debug ("applying keyboard event handlers to ", $container.attr("role"));
+debug ("applying keyboard event handlers to ", $container.attr("role"));
 $container.on ("keydown",
  "[role=option], [role=treeitem], [role=menuitem]",
 function (e) {
@@ -53,6 +52,9 @@ throw new Error ("invalid key: " + key);
 
 if (! action) return true;
 
+e.stopImmediatePropagation();
+e.stopPropagation();
+e.preventDefault();
 if (action instanceof Function) {
 //debug ("- call function");
 performAction (action, e);
@@ -65,6 +67,8 @@ return true;
 } // if
 
 return false;
+}).on ("change", function (e) {
+defineSelection ();
 }); // on
 } // if
 
@@ -79,12 +83,22 @@ $newNode.focus ();
 return $newNode;
 } // performAction
 
+function defineSelection ($node) {
+if ($container.is ("select")) return;
+if ($container.children().length === 0) $node = $container;
+else if (! $node) $node = $container.children().first();
+
+current ($container, $node);
+} // defineSelection
+
 function current ($container, $node) {
+debug ("current: ", $container[0].nodeName, $container.children().length, $node? $node[0].nodeName : null);
 if (!$node || !$node.length) {
-return $container.find ("[tabindex=0]");
+return $container.addBack().find ("[tabindex=0]");
 
 } else {
-$container.find("[tabindex=0]").removeAttr("tabindex");
+$container.removeAttr("tabindex");
+$container.children().removeAttr ("tabindex");
 $node.attr ({
 tabindex: "0"
 });
