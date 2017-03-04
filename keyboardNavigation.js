@@ -1,6 +1,7 @@
 "use strict";
 
-function keyboardNavigation ($containers, options) {
+function keyboardNavigation ($container, options) {
+var name = $container[0].nodeName.toLowerCase();
 var defaultOptions = {
 type: "list", // list, tree, or menu
 
@@ -27,9 +28,6 @@ options.keymap = processKeymap (options.keymap);
 //debug ("keymap: ", options.keymap);
 //debug ("applying to ", $containers.length, " containers");
 
-$containers.each (function () {
-var $container = $(this);
-var name = $container[0].nodeName.toLowerCase();
 
 
 if (name === "ul" || name === "div") {
@@ -37,7 +35,7 @@ if (name === "ul") $("ul", $container).addBack().css ("list-style-type", "none")
 applyAria ($container, options.type);
 defineSelection ();
 
-debug ("applying keyboard event handlers to ", $container.attr("role"));
+//debug ("applying keyboard event handlers to ", $container.attr("role"));
 $container.on ("keydown",
  "[role=option], [role=treeitem], [role=menuitem]",
 function (e) {
@@ -78,7 +76,7 @@ var $newNode = action.call (e.target, e);
 
 if (!$newNode || !$newNode.length || $newNode[0] === e.target) return null;
 
-current($container, $newNode);
+current($newNode);
 $newNode.focus ();
 return $newNode;
 } // performAction
@@ -88,25 +86,24 @@ if ($container.is ("select")) return;
 if ($container.children().length === 0) $node = $container;
 else if (! $node) $node = $container.children().first();
 
-current ($container, $node);
+current ($node);
 } // defineSelection
 
-function current ($container, $node) {
-debug ("current: ", $container[0].nodeName, $container.children().length, $node? $node[0].nodeName : null);
-if (!$node || !$node.length) {
-return $container.addBack().find ("[tabindex=0]");
+function current ($node) {
+//debug ("current: ", $container[0].nodeName, $container[0].id, $container.children().length, $node? $node[0].nodeName : null);
+
+if (!$node) {
+if ($container.is("select")) return $node.find(":selected");
+else return $container.find ("[tabindex=0]");
 
 } else {
 $container.removeAttr("tabindex");
 $container.children().removeAttr ("tabindex");
-$node.attr ({
-tabindex: "0"
-});
+$node.attr ({tabindex: "0"});
 return $node;
 } // if
 } // current
 
-}); // each $containers
 
 function processKeymap (_keymap) {
 var keymap = {};
@@ -166,4 +163,5 @@ if (!$down || !$down.length) return $(this);
 return $down;
 } // downLevel
 
+return current;
 } // keyboardNavigation
