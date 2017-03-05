@@ -197,4 +197,4 @@ return $down;
 return current;
 } // keyboardNavigation
 
-alert ("keyboardNavigation.js loaded");
+//alert ("keyboardNavigation.js loaded");
