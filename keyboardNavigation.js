@@ -5,6 +5,7 @@ var name = $container[0].nodeName.toLowerCase();
 var defaultOptions = {
 type: "list", // list, tree, or menu
 selected: true,
+wrap: false,
 
 keymap: {
 next: ["ArrowDown", "ArrowRight"],
@@ -31,11 +32,10 @@ options.keymap = processKeymap (options.keymap);
 //debug ("applying to ", $containers.length, " containers");
 
 
-
-if (name === "ul" || name === "div") {
-if (name === "ul") $("ul", $container).addBack().css ("list-style-type", "none");
+if ($container.is ("ul, div")) {
+if ($container.is ("ul")) $("ul", $container).addBack().css ("list-style-type", "none");
 applyAria ($container, options.type);
-defineSelection ();
+current ();
 
 //debug ("applying keyboard event handlers to ", $container.attr("role"));
 $container.on ("keydown",
@@ -67,9 +67,7 @@ return true;
 } // if
 
 return false;
-}).on ("change", function (e) {
-defineSelection ();
-}); // on
+});
 } // if
 
 function performAction (action, e) {
@@ -87,24 +85,46 @@ function defineSelection ($node) {
 if ($container.is ("select")) return;
 if ($container.children().length === 0) $node = $container;
 else if (! $node) $node = $container.children().first();
+else if (!jQuery.contains ($container[0], $node[0])) $node = null;
 
 current ($node);
 } // defineSelection
 
 function current ($node) {
 //debug ("current: ", $container[0].nodeName, $container[0].id, $container.children().length, $node? $node[0].nodeName : null);
+if ($container.is ("select")) return $container.find(":selected");
 
 if (!$node) {
-return $container.find ("[tabindex=0]");
+$node = $container.find ("[tabindex=0]");
+if ($node.length === 0) $node = $container.children().first().attr("tabindex", "0");
+return $node
 
 } else {
 $container.removeAttr("tabindex");
 $container.children().removeAttr ("tabindex");
 $node.attr ({tabindex: "0"});
+$container.trigger ("change");
 return $node;
 } // if
 } // current
 
+/// changes
+
+
+// create an observer instance
+var observer = new MutationObserver(function(mutations) {
+mutations.forEach(function(mutation) {
+applyAria ($container, options.type);
+current ();
+}); // forEach Mutations
+
+}); // new Observer
+
+// pass in the target node, as well as the observer options
+observer.observe($container[0], {childList: true});
+
+// later, you can stop observing
+//observer.disconnect();
 
 function processKeymap (_keymap) {
 var keymap = {};
@@ -176,3 +196,5 @@ return $down;
 /// API
 return current;
 } // keyboardNavigation
+
+alert ("keyboardNavigation.js loaded");
