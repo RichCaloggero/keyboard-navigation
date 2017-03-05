@@ -4,6 +4,7 @@ function keyboardNavigation ($container, options) {
 var name = $container[0].nodeName.toLowerCase();
 var defaultOptions = {
 type: "list", // list, tree, or menu
+selected: true,
 
 keymap: {
 next: ["ArrowDown", "ArrowRight"],
@@ -15,8 +16,9 @@ last: ["End"]
 actions: {
 next: nextItem,
 prev: prevItem,
-first: function () {},
-last: function () {},
+first: firstItem,
+last: lastItem,
+
 up: upLevel,
 down: downLevel,
 out: function () {}
@@ -93,8 +95,7 @@ function current ($node) {
 //debug ("current: ", $container[0].nodeName, $container[0].id, $container.children().length, $node? $node[0].nodeName : null);
 
 if (!$node) {
-if ($container.is("select")) return $node.find(":selected");
-else return $container.find ("[tabindex=0]");
+return $container.find ("[tabindex=0]");
 
 } else {
 $container.removeAttr("tabindex");
@@ -150,6 +151,14 @@ function prevItem () {
 return $(this).prev();
 } // prevItem
 
+function firstItem () {
+return $(this).parent().children().first();
+} // firstItem 
+
+function lastItem () {
+return $(this).parent().children().last();
+} // lastItem 
+
 function upLevel () {
 var $root = $(this).parent().closest ("[role=tree]");
 var $up = $(this).parent().closest("[role=treeitem]");
@@ -163,5 +172,7 @@ if (!$down || !$down.length) return $(this);
 return $down;
 } // downLevel
 
+
+/// API
 return current;
 } // keyboardNavigation
