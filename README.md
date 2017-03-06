@@ -8,12 +8,17 @@ Applies keyboard navigation to list, tree, and menu widgits.
 ## Usage
 
 ```
-keyboardNavigation ($container, options);
+selectItem = keyboardNavigation ($container, options);
 ```
 
 ## Returns
 
-API : a function which can be called to get or set the currently selected item
+a function which can be called to get or set the currently selected item
+
+_Note: if applied to a native select element, the function returned only gets the currently selected item_. 
+
+## Demo
+http://www.mit.edu/~rjc/aria/keyboardNavigation/demo.html
 
 ## options:
 - type: "tree", "list", or "menu"
