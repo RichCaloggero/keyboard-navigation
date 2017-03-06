@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Keyboard Navigation Demo</title>
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="keyboardNavigation.js"></script>
+</head>
+<body>
+<h1>Keyboard Navigation Demo</h1>
+
+<h2>Simple List</h2>
+
+<p>Behaves like a native "select" element via keyboard:</p>
+<ul class="list">
+<li>item 1</li>
+<li>item 2</li>
+<li>item 3</li>
+<li>item 4</li>
+</ul>
+<script>
+// enable keyboard navigation within the list
+var selectItem = keyboardNavigation ($(".list"));
+// select last element
+selectItem ($(".list").children().last());
+</script>
+
+
+<h2>Tree</h2>
+<p>Simple nested list can be walked like a tree via keyboard by employing keyboardNavigation...</p>
+<ul class="tree">
+<li>fruits
+<ul>
+<li>apple
+</li><li>
+orange
+</li><li>
+grapefruit
+</li></ul>
+</li><li>
+vegetables
+<ul>
+<li>pea
+</li><li>
+carot
+</li><li>
+lettuce
+</li></ul>
+</li></ul>
+
+<script>
+keyboardNavigation ($(".tree"), {
+type: "tree",
+keymap: {
+up: ["ArrowLeft"], down: ["ArrowRight"],
+prev: ["ArrowUp"], next: ["ArrowDown"],
+first: ["Home"], last: ["End"]
+}
+});
+</script>
+
+<div id="debug" aria-live="polite">
+</div>
+
+</body>
+</html>

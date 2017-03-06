@@ -143,6 +143,7 @@ return keymap;
 
 function applyAria ($container, type) {
 var name, $groups, $branches, $hasChildren;
+type = type.toLowerCase();
 
 if (type === "list") {
 $container.attr ("role", "listbox")
