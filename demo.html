@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <title>Keyboard Navigation Demo</title>
+<style>
+:focus {border: thin dotted;}
+</style>
 <script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="debug.js"></script>
 <script src="keyboardNavigation.js"></script>
 </head>
 <body>
@@ -28,39 +32,44 @@ selectItem ($(".list").children().last());
 
 <h2>Tree</h2>
 <p>Simple nested list can be walked like a tree via keyboard by employing keyboardNavigation...</p>
-<ul class="tree">
-<li>fruits
-<ul>
-<li>apple
+<ul class="tree"><li>
+<span>fruits</span>
+<ul><li>
+<span>apple</span>
 </li><li>
-orange
+<span>orange</span>
 </li><li>
-grapefruit
+<span>grapefruit</span>
 </li></ul>
 </li><li>
-vegetables
-<ul>
-<li>pea
+<span>vegetables</span>
+<ul><li>
+<span>pea</span>
 </li><li>
-carot
+<span>carot</span>
 </li><li>
-lettuce
+<span>lettuce</span>
 </li></ul>
 </li></ul>
+<div id="debug" aria-live="polite">
+</div>
 
 <script>
-keyboardNavigation ($(".tree"), {
+function activate () {
+alert ("current item: " + $(this).text());
+} // activate
+
+keyboardNavigation ($(".tree"), { // only specify options which need to be overridden (up, down, first, and last can stay at their defaults, and all builtin actions can be used)
 type: "tree",
+actions: {activate: activate}, // only additional action
 keymap: {
-up: ["ArrowLeft"], down: ["ArrowRight"],
-prev: ["ArrowUp"], next: ["ArrowDown"],
-first: ["Home"], last: ["End"]
+activate: ["Enter", " "], // execute new action
+up: ["ArrowLeft"], down: ["ArrowRight"], // defaults are for list traversal, so needed to change them
+prev: ["ArrowUp"], next: ["ArrowDown"]
 }
 });
 </script>
 
-<div id="debug" aria-live="polite">
-</div>
 
 </body>
 </html>

@@ -27,3 +27,34 @@ http://www.mit.edu/~rjc/aria/keyboardNavigation/demo.html
 - keymap: object whose keys are actions, values are arrays of key specifiers
 - actions: objects whose keys are action names, values are functions to call
 + defaults suitable for both lists and trees now implemented
+
+### Defaults
+
+Here are the default options. User-supplied options are merged such that user actions and user keymap entries override the defaults.
+
+```
+var defaultOptions = {
+type: "list", // list, tree, or menu
+selected: true,
+wrap: false,
+
+keymap: {
+next: ["ArrowDown", "ArrowRight"],
+prev: ["ArrowUp", "ArrowLeft"],
+first: ["Home"],
+last: ["End"]
+}, // keymap
+
+actions: {
+next: nextItem,
+prev: prevItem,
+first: firstItem,
+last: lastItem,
+
+up: upLevel,
+down: downLevel,
+out: function () {}
+} // actions
+}; // defaultOptions
+```
+
