@@ -2,11 +2,16 @@
 
 Applies keyboard navigation to list, tree, and menu widgits.
 
+## Required
+- "jquery" from http://jquery.com/
+
+## Usage
+
 ```
 keyboardNavigation ($container, options);
 ```
 
-### Returns
+## Returns
 
 API : a function which can be called to get or set the currently selected item
 
