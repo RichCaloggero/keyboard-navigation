@@ -94,18 +94,19 @@ function current ($node) {
 //debug ("current: ", $container[0].nodeName, $container[0].id, $container.children().length, $node? $node[0].nodeName : null);
 if ($container.is ("select")) return $container.find(":selected");
 
-if (!$node) {
-$node = $container.find ("[tabindex=0]");
-if ($node.length === 0) $node = $container.children().first().attr("tabindex", "0");
-return $node
-
-} else {
+if ($node && $node.length > 0) {
 $container.removeAttr("tabindex");
 $container.children().removeAttr ("tabindex");
-$node.attr ({tabindex: "0"});
 $container.trigger ("change");
-return $node;
+} else {
+$node = $container.find ("[tabindex=0]");
+if ($node.length === 0) $node = $container.children().first();
 } // if
+
+if ($node.length === 0) $container.attr("tabindex", "0");
+else $node.attr ("tabindex", "0");
+
+return $node
 } // current
 
 /// changes
@@ -178,6 +179,7 @@ return $(this).parent().children().first();
 function lastItem () {
 return $(this).parent().children().last();
 } // lastItem 
+
 
 function upLevel () {
 var $root = $(this).parent().closest ("[role=tree]");
