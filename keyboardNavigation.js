@@ -2,6 +2,7 @@
 
 function keyboardNavigation ($container, options) {
 var name = $container[0].nodeName.toLowerCase();
+var keymap, actions;
 var defaultOptions = {
 type: "list", // list, tree, or menu
 selected: true,
@@ -26,8 +27,12 @@ out: function () {}
 } // actions
 }; // defaultOptions
 
-options = jQuery.extend ({}, defaultOptions, (options || {}));
+options = Object.assign ({}, defaultOptions, options);
+options.keymap = Object.assign ({}, defaultOptions.keymap, options.keymap);
+options.actions = Object.assign ({}, defaultOptions.actions, options.actions);
 options.keymap = processKeymap (options.keymap);
+
+
 //debug ("keymap: ", options.keymap);
 //debug ("applying to ", $containers.length, " containers");
 
@@ -39,7 +44,7 @@ current ();
 
 //debug ("applying keyboard event handlers to ", $container.attr("role"));
 $container.on ("keydown",
- "[role=option], [role=treeitem], [role=menuitem]",
+// "[role=option], [role=treeitem], [role=menuitem]",
 function (e) {
 var key = e.key || e.which || e.keyCode;
 var actionName = options.keymap[key];
@@ -49,12 +54,14 @@ if (! key) {
 alert ("invalid key: " + key);
 throw new Error ("invalid key: " + key);
 } // if
+//debug ("key: ", key, actionName, typeof(action));
 
 if (! action) return true;
 
 e.stopImmediatePropagation();
 e.stopPropagation();
 e.preventDefault();
+
 if (action instanceof Function) {
 //debug ("- call function");
 performAction (action, e);
@@ -71,7 +78,9 @@ return false;
 } // if
 
 function performAction (action, e) {
-var $newNode = action.call (e.target, e);
+var $newNode;
+//debug ("performAction: ", action);
+$newNode = action.call (e.target, e);
 //debug ("new: ", $newNode.text());
 
 if (!$newNode || !$newNode.length || $newNode[0] === e.target) return null;
@@ -156,6 +165,7 @@ return keymap;
 
 function applyAria ($container, type) {
 var name, $groups, $branches, $hasChildren;
+type = type.toLowerCase();
 
 if (type === "list") {
 $container.attr ("role", "listbox")
@@ -192,6 +202,7 @@ return $(this).parent().children().first();
 function lastItem () {
 return $(this).parent().children().last();
 } // lastItem 
+
 
 function upLevel () {
 var $root = $(this).parent().closest ("[role=tree]");
