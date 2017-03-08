@@ -82,31 +82,44 @@ return $newNode;
 } // performAction
 
 function defineSelection ($node) {
-if ($container.is ("select")) return;
-if ($container.children().length === 0) $node = $container;
-else if (! $node) $node = $container.children().first();
-else if (!jQuery.contains ($container[0], $node[0])) $node = null;
-
-current ($node);
+$node = $container.children().first();
 } // defineSelection
 
-function current ($node) {
+function current ($node, _replaceSelection) {
 //debug ("current: ", $container[0].nodeName, $container[0].id, $container.children().length, $node? $node[0].nodeName : null);
 if ($container.is ("select")) return $container.find(":selected");
 
-if (!$node) {
-$node = $container.find ("[tabindex=0]");
-if ($node.length === 0) $node = $container.children().first().attr("tabindex", "0");
-return $node
-
+if ($container.children().length === 0) {
+$container.attr ("tabindex", "0");
+return $();
 } else {
-$container.removeAttr("tabindex");
-$container.children().removeAttr ("tabindex");
-$node.attr ({tabindex: "0"});
+$container.removeAttr ("tabindex");
+} // if
+
+if (!$node || !$node.length) {
+$node = $container.find ("[aria-selected=true]");
+if ($node.length > 0) return $node;
+else $node = initialSelection();
+} // if
+
+if (replaceSelection()) $("[aria-selected=true]", $container).removeAttr ("aria-selected");
+$("[tabindex=0]", $container).addBack().removeAttr ("tabindex");
+
+$node.attr ("aria-selected", "true")
+.last().attr ("tabindex", "0");
 $container.trigger ("change");
 return $node;
-} // if
+
+function replaceSelection () {
+return !$container.is ("[aria-multiselectable]") || _replaceSelection;
+} // replaceSelection
+
+function initialSelection () {
+return $container.children().first();
+} // initialSelection
 } // current
+
+
 
 /// changes
 
@@ -114,6 +127,7 @@ return $node;
 // create an observer instance
 var observer = new MutationObserver(function(mutations) {
 mutations.forEach(function(mutation) {
+//debug ("mutation: ", mutation);
 applyAria ($container, options.type);
 current ();
 }); // forEach Mutations
