@@ -18,7 +18,7 @@ a function which can be called to get or set the currently selected item
 _Note: if applied to a native select element, the function returned only gets the currently selected item_. 
 
 ## Demo
-[See demo](./demo.html)
+https://RichCaloggero/github.io/keyboard-navigation/demo.html
 
 ## options:
 - type: "tree", "list", or "menu"
