@@ -3,53 +3,61 @@
 <head>
 <meta charset="utf-8">
 <title>Test</title>
-
 </head>
 <body>
 <h1>Test</h1>
 
-<ul class="tree"><li>
-<span>1</span>
-</li><li>
-<span>2</span>
-<ul><li>
-<span>2.1</span>
-</li><li>
-<span>2.2</span>
-</li></ul>
-</li><li>
-<span>3</span>
-</li></ul>
-
-<ul class="listbox"><li>
-one
-</li><li>
-two
-</li><li>
-three
-</li><li>
-four
-</li></ul>
-
-<div id="debug" role="region" aria-live="polite">
+<div id="debug" aria-live="polite">
 </div>
 
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="debug.js"></script>
 <script src="keyboardNavigation.js"></script>
 <script>
-keyboardNavigation ($(".listbox"));
-keyboardNavigation ($(".tree"), {
-type: "tree",
+var nextItem, prevItem, firstItem, lastItem, upLevel, downLevel, activate;
+var options, keymap, actions;
+var defaultOptions = {
+type: "list", // list, tree, or menu
+selected: true,
+wrap: false,
 
 keymap: {
-next: ["ArrowDown"], prev: ["ArrowUp"],
-up: ["ArrowLeft"], down: ["ArrowRight"]
-} // keymap
-});
+next: ["ArrowDown", "ArrowRight"],
+prev: ["ArrowUp", "ArrowLeft"],
+first: ["Home"],
+last: ["End"]
+}, // keymap
 
-alert ("loaded");
+actions: {
+next: nextItem,
+prev: prevItem,
+first: firstItem,
+last: lastItem,
+
+up: upLevel,
+down: downLevel,
+out: function () {}
+} // actions
+}; // defaultOptions
+
+var options = {
+type: "tree",
+actions: {activate: activate},
+keymap: {activate: ["Enter"], up: ["ArrowLeft"], down: ["ArrowRight"]}
+}; // options
+
+Object.assign (options.keymap, defaultOptions.keymap, options.keymap);
+Object.assign (options.actions, defaultOptions.actions, options.actions);
+options = Object.assign({}, defaultOptions, options);
+
+
+$("#debug").text (options.toSource());
+
+function noop () {};
+
+
 </script>
+
 
 </body>
 </html>

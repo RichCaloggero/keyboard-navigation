@@ -1,12 +1,16 @@
 "use strict";
 
-function keyboardNavigation ($container, options) {
-var name = $container[0].nodeName.toLowerCase();
+function keyboardNavigation (container, options) {
+var focusedNode = null;
+var children = [];
 var keymap, actions;
+
 var defaultOptions = {
 type: "list", // list, tree, or menu
-selected: true,
+embedded: false, // if embedded in another widget, will not maintain tabindex="0" on container or child element
 wrap: false,
+applyAria: true,
+
 
 keymap: {
 next: ["ArrowDown", "ArrowRight"],
@@ -26,26 +30,27 @@ down: downLevel,
 out: function () {}
 } // actions
 }; // defaultOptions
+options = options || {};
 
+if (container.matches("select")) return;
+
+//debug ("user options before: ", options.toSource());
 options = Object.assign ({}, defaultOptions, options);
+//debug ("user options after assign: ", options.toSource());
 options.keymap = Object.assign ({}, defaultOptions.keymap, options.keymap);
 options.actions = Object.assign ({}, defaultOptions.actions, options.actions);
+
+//debug ("keymap before: ", options.keymap.toSource());
 options.keymap = processKeymap (options.keymap);
+//debug ("keymap after: ", options.keymap.toSource());
+
+if (container.matches("ul")) removeBullets (container);
 
 
-//debug ("keymap: ", options.keymap);
-//debug ("applying to ", $containers.length, " containers");
+if (options.applyAria) applyAria (container, options.type);
+setFocusedNode(initialFocus());
 
-
-if ($container.is ("ul, div")) {
-if ($container.is ("ul")) $("ul", $container).addBack().css ("list-style-type", "none");
-applyAria ($container, options.type);
-current ();
-
-//debug ("applying keyboard event handlers to ", $container.attr("role"));
-$container.on ("keydown",
-// "[role=option], [role=treeitem], [role=menuitem]",
-function (e) {
+container.addEventListener ("keydown", function (e) {
 var key = e.key || e.which || e.keyCode;
 var actionName = options.keymap[key];
 var action = options.actions[actionName]; // action
@@ -58,93 +63,76 @@ throw new Error ("invalid key: " + key);
 
 if (! action) return true;
 
-e.stopImmediatePropagation();
-e.stopPropagation();
-e.preventDefault();
-
 if (action instanceof Function) {
 //debug ("- call function");
 performAction (action, e);
 } else if (typeof(action) === "string") {
 //debug ("- fire event ", action);
-$(e.target).trigger (action);
+e.target.dispatchEvent (new CustomEvent(action));
 } else {
 alert ("invalid type: " + action);
 return true;
 } // if
 
 return false;
-});
-} // if
+}); // keydown
 
 function performAction (action, e) {
-var $newNode;
-//debug ("performAction: ", action);
-$newNode = action.call (e.target, e);
-//debug ("new: ", $newNode.text());
+var newNode = action.call (container, getFocusedNode());
+//debug ("performAction: ", e.target.outerHTML, newNode.outerHTML);
 
-if (!$newNode || !$newNode.length || $newNode[0] === e.target) return null;
-
-current($newNode);
-$newNode.focus ();
-return $newNode;
+if (newNode !== e.target) current (newNode);
 } // performAction
 
-function defineSelection ($node) {
-$node = $container.children().first();
-} // defineSelection
 
-function current ($node, _replaceSelection) {
-//debug ("current: ", $container[0].nodeName, $container[0].id, $container.children().length, $node? $node[0].nodeName : null);
-if ($container.is ("select")) return $container.find(":selected");
-
-if ($container.children().length === 0) {
-$container.attr ("tabindex", "0");
-return $();
+function current (node) {
+if (node) {
+setFocusedNode (node);
+node.focus ();
+return node;
 } else {
-$container.removeAttr ("tabindex");
+return getFocusedNode ();
 } // if
-
-if (!$node || !$node.length) {
-$node = $container.find ("[aria-selected=true]");
-if ($node.length > 0) return $node;
-else $node = initialSelection();
-} // if
-
-if (replaceSelection()) $("[aria-selected=true]", $container).removeAttr ("aria-selected");
-$("[tabindex=0]", $container).addBack().removeAttr ("tabindex");
-
-$node.attr ("aria-selected", "true")
-.last().attr ("tabindex", "0");
-$container.trigger ("change");
-return $node;
-
-function replaceSelection () {
-return !$container.is ("[aria-multiselectable]") || _replaceSelection;
-} // replaceSelection
-
-function initialSelection () {
-return $container.children().first();
-} // initialSelection
 } // current
 
+function initialFocus () {
+var node = getChildren(container)[0];
+//debug ("initialFocus: ", node.outerHTML);
+return node;
+} // initialFocus
 
+function getFocusedNode () {
+//debug ("getFocusedNode: ", focusedNode.outerHTML);
+return focusedNode;
+} // getFocusedNode
 
-/// changes
+function setFocusedNode (node) {
+var oldNode;
+if (! node) return;
+focusedNode = node;
+if (! options.embedded) {
+oldNode = container.querySelector ("[tabindex='0']");
+if (oldNode) oldNode.setAttribute ("tabindex", "-1");
+focusedNode.setAttribute ("tabindex", "0");
+} // if
+
+//debug ("setFocus to ", node.outerHTML);
+} // setFocusedNode
+
 
 
 // create an observer instance
 var observer = new MutationObserver(function(mutations) {
 mutations.forEach(function(mutation) {
 //debug ("mutation: ", mutation);
-applyAria ($container, options.type);
-current ();
+if (options.applyAria) applyAria (container, options.type);
+setFocusedNode (initialFocus());
 }); // forEach Mutations
 
 }); // new Observer
 
 // pass in the target node, as well as the observer options
-observer.observe($container[0], {childList: true});
+//observer.observe(container, {childList: true});
 
 // later, you can stop observing
 //observer.disconnect();
@@ -163,63 +151,91 @@ keymap[key] = action;
 return keymap;
 } // processKeymap
 
-function applyAria ($container, type) {
-var name, $groups, $branches, $hasChildren;
+function applyAria (container, type) {
+var name, branches, children;
 type = type.toLowerCase();
+//debug ("applyAria to ", type, nodeName(container));
+
+
 
 if (type === "list") {
-$container.attr ("role", "listbox")
-.children ().attr ({role: "option"});
+container.setAttribute("role", "listbox");
+getChildren(container).forEach (e => {
+e.setAttribute ("role", "option");
+e.setAttribute ("tabindex", "-1");
+});
+//debug ("aria applied to ", type);
 
 } else if (type === "tree") {
-name = $container[0].nodeName.toLowerCase();
-$groups = $container.find (name).attr ("role", "group");
-name = $container.children().first()[0].nodeName.toLowerCase();
-$branches = $container.find (name).attr ("role", "treeitem");
-$container.attr ("role", "tree");
+name = nodeName (container);
+//debug ("tree: nodeName = ", name);
+Array.from(container.querySelectorAll(name))
+.forEach (e => e.setAttribute ("role", "group"));
+
+name = nodeName(container.firstChild);
+branches = Array.from(container.querySelectorAll(name))
+.forEach (e => {e.setAttribute("role", "treeitem"); e.setAttribute("tabindex", "-1");});
+container.setAttribute("role", "tree");
 
 // add aria-expanded to nodes only if they are not leaf nodes
-$hasChildren = $branches.has("[role=group]");
-$hasChildren.attr ("aria-expanded", "false");
+Array.from(container.querySelectorAll("[role=treeitem] > [role=group]"))
+.forEach (e => e.parentNode.setAttribute("aria-expanded", "false"));
 
 } // if
 
 } // applyAria
 
+function getChildren (container) {
+var children;
+if (nodeName(firstChild(container)) === "slot") children = firstChild(container).assignedNodes();
+else children = container.childNodes;
+children = Array.from(children)
+.filter(e => e.nodeType === 1);
+//debug ("applying aria to ", children.length + " children");
+return children;
+} // getChildren
+
+function removeBullets (container) {
+container.style.listStyleType = "none";
+getChildren(container)
+.forEach (e => e.matches("ul") && removeBullets(e));
+} // removeBullets
+
+
 /// default actions
-function nextItem () {
-return $(this).next();
+
+function nextItem (node) {
+return nextSibling (node);
 } // nextItem
 
-function prevItem () {
-return $(this).prev();
+function prevItem (node) {
+return previousSibling (node);
 } // prevItem
 
-function firstItem () {
-return $(this).parent().children().first();
+function firstItem (node) {
+return firstChild(node.parentNode);
 } // firstItem 
 
-function lastItem () {
-return $(this).parent().children().last();
+function lastItem (node) {
+return lastChild(node.parentNode);
 } // lastItem 
 
 
-function upLevel () {
-var $root = $(this).parent().closest ("[role=tree]");
-var $up = $(this).parent().closest("[role=treeitem]");
-if (!$up || !$up.length || !jQuery.contains($root[0], $up[0])) return $(this);
-return $up;
+function upLevel (node) {
+var root = node.closest ("[role=tree]");
+var up = node.parentNode.closest("[role=treeitem]");
+if (up && root.contains(up)) return up;
+else return node;
 } // upLevel
 
-function downLevel () {
-var $down = $(this).find("[role=group]:first > [role=treeitem]:first");
-if (!$down || !$down.length) return $(this);
-return $down;
+function downLevel (node) {
+var down = node.querySelector("[role=group] > [role=treeitem]");
+if (down) return down;
+else return node;
 } // downLevel
 
-
-/// API
+/// API		
 return current;
 } // keyboardNavigation
 
-//alert ("keyboardNavigation.js loaded");
+alert ("keyboardNavigation.js loaded");
