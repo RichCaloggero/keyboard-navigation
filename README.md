@@ -19,13 +19,13 @@ It currently handles both standalone and embedded listbox and tree widgets, and 
 selectItem = keyboardNavigation ($container, options);
 ```
 
-## Returns
+### Returns
 
 a function which can be called to get or set the currently focused item
 
 ## Demo
 
-[https://RichCaloggero.github.io/keyboard-navigation/demo.html](https://RichCaloggero.github.io/keyboard-navigation/demo.html)
+http://RichCaloggero.github.io/keyboard-navigation/demo.html
 
 
 ## options:
