@@ -25,7 +25,7 @@ a function which can be called to get or set the currently focused item
 
 ## Demo
 
-https://RichCaloggerogithub.io/keyboard-navigation/demo.html
+https://RichCaloggero.github.io/keyboard-navigation/demo.html
 
 ## options:
 
