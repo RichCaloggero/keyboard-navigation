@@ -27,15 +27,16 @@ a function which can be called to get or set the currently focused item
 https://RichCaloggero/github.io/keyboard-navigation/demo.html
 
 ## options:
-type: "list", // list, tree, or menu
-embedded: false, // if embedded in another widget, will not maintain tabindex="0" on container or child element
-multiselect: false,
-applyAria: true,
-nodeSelector: "li",
-activeNodeSelector: "",
-groupSelector: "ul",
-wrap: false,
 
+
+- type: "list", // list, tree, or menu
+- embedded: false, // if embedded in another widget, will not maintain tabindex="0" on container or child element
+- multiselect: false,
+- applyAria: true,
+- nodeSelector: "li",
+- activeNodeSelector: "",
+- groupSelector: "ul",
+- wrap: false,
 - keymap: object whose keys are actions, values are arrays of key specifiers
 - actions: objects whose keys are action names, values are functions to call
 + defaults suitable for both lists and trees now implemented
@@ -44,15 +45,18 @@ wrap: false,
 
 Arrays specify multiple keys for same action
 
+```
 keymap: {
 next: ["ArrowDown", "ArrowRight"],
 prev: ["ArrowUp", "ArrowLeft"],
 first: ["Home"],
 last: ["End"]
 }, // keymap
+```
 
 ### Default actions
 
+```
 actions: {
 next: nextItem,
 prev: prevItem,
