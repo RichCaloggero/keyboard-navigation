@@ -1,0 +1,19 @@
+{
+  "name": "keyboard-navigation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "keyboardNavigation.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/RichCaloggero/keyboard-navigation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RichCaloggero/keyboard-navigation/issues"
+  },
+  "homepage": "https://github.com/RichCaloggero/keyboard-navigation#readme"
+}
