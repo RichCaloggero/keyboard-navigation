@@ -1,6 +1,8 @@
 "use strict";
 /// DOM traversal
 
+var _marked = [positiveIntegerGenerator].map(regeneratorRuntime.mark);
+
 function nextSibling(node) {
   var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "*";
 
@@ -80,6 +82,42 @@ function getAllNodes(nodes) {
     } // if
   } // flatten
 } // getAllNodes
+
+/// ID generation
+
+function idGen(stem) {
+  return stem + positiveIntegers.next().value;
+} // idGen
+
+var positiveIntegers = positiveIntegerGenerator();
+function positiveIntegerGenerator() {
+  var n;
+  return regeneratorRuntime.wrap(function positiveIntegerGenerator$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          n = 0;
+
+        case 1:
+          if (!true) {
+            _context.next = 6;
+            break;
+          }
+
+          _context.next = 4;
+          return ++n;
+
+        case 4:
+          _context.next = 1;
+          break;
+
+        case 6:
+        case "end":
+          return _context.stop();
+      }
+    }
+  }, _marked[0], this);
+} // positiveIntegerGenerator
 "use strict";
 
 function keyboardNavigation(container, options) {
