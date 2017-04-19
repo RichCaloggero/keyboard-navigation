@@ -1,6 +1,7 @@
 "use strict";
 /// DOM traversal
 
+module.exports.nextSibling = nextSibling;
 function nextSibling (node, selector = "*") {
 selector = selector.trim();
 while (node) {
@@ -10,6 +11,7 @@ if (node && node.nodeType === 1 && node.matches(selector)) return node;
 return null;
 } // nextSibling
 
+module.exports.previousSibling = previousSibling;
 function previousSibling (node, selector = "*") {
 selector = selector.trim();
 //alert ("previousSibling: selector is " + selector);
@@ -20,6 +22,7 @@ if (node && node.nodeType === 1 && node.matches(selector)) return node;
 return null;
 } // previousSibling
 
+module.exports.firstChild = firstChild;
 function firstChild (node) {
 if (! node) return null;
 node = node.firstChild;
@@ -28,6 +31,7 @@ if (node.nodeType === 1) return node;
 else return nextSibling(node);
 } // firstChild
 
+module.exports.lastChild = lastChild;
 function lastChild (node) {
 if (! node) return null;
 node = node.lastChild;
@@ -36,6 +40,7 @@ if (node && node.nodeType === 1) return node;
 else return previousSibling(node);
 } // firstChild
 
+module.exports.nodeName = nodeName;
 function nodeName (node) {
 if (! node) return "";
 if (! node.nodeName) {
@@ -44,6 +49,7 @@ throw Error ("bad node: " + JSON.stringify(node));
 return node.nodeName.toLowerCase();
 } // nodeName
 
+module.exports.indexOf = indexOf;
 function indexOf (node) {
 var s, p = node.parentNode;
 if (! node) return -1;
@@ -59,6 +65,7 @@ i += 1;
 return (s)? i : -1;
 } // indexOf
 
+module.exports.getAllNodes = getAllNodes;
 function getAllNodes (nodes, selector = "*") {
 selector = selector.trim();
 return flatten (nodes)
@@ -78,5 +85,3 @@ nodeName(node) === "slot"? flatten(node.assignedNodes()) : [node]
 } // flatten
 
 } // getAllNodes
-
-

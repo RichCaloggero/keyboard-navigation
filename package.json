@@ -1,28 +1,9 @@
 {
   "name": "keyboard-navigation",
   "version": "1.1.0",
-  "description": "",
   "main": "keyboardNavigation.js",
-  "babel": {
-    "presets": [
-      "latest"
-    ]
-  },
   "scripts": {
-    "build": "babel source -o keyboardNavigation.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/RichCaloggero/keyboard-navigation.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/RichCaloggero/keyboard-navigation/issues"
-  },
-  "homepage": "https://github.com/RichCaloggero/keyboard-navigation#readme",
-  "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-preset-latest": "^6.24.1"
+    "prebuild": "copy source\\dom.js dom.js",
+    "build": "browserify source/keyboardNavigation.js -o keyboardNavigation.js"
   }
 }

@@ -1,6 +1,8 @@
 "use strict";
 
+module.exports = keyboardNavigation;
 function keyboardNavigation (container, options) {
+var dom = require ("./dom.js");
 var focusedNode = null;
 var searchTimer = null;
 var searchText = "";
@@ -216,18 +218,18 @@ getNodes("ul").forEach (node => node.style.listStyleType = "none");
 } // removeBullets
 
 function getNodes (selector = (options.nodeSelector + options.activeNodeSelector), nodes = container) {
-return getAllNodes (nodes, selector);
+return dom.getAllNodes (nodes, selector);
 } // getNodes
 
 
 /// default actions
 
 function nextItem (node) {
-return nextSibling (node, options.nodeSelector + options.activeNodeSelector);
+return dom.nextSibling (node, options.nodeSelector + options.activeNodeSelector);
 } // nextItem
 
 function prevItem (node) {
-return previousSibling (node, options.nodeSelector + options.activeNodeSelector);
+return dom.previousSibling (node, options.nodeSelector + options.activeNodeSelector);
 } // prevItem
 
 function firstItem (node) {
