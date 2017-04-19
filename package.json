@@ -9,7 +9,7 @@
     ]
   },
   "scripts": {
-    "build": "babel source -o keyboard-navigation.js"
+    "build": "babel source -o keyboardNavigation.js"
   },
   "repository": {
     "type": "git",
