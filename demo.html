@@ -3,11 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <title>keyboardNavigation demo</title>
-<script src="domTraversal.js"></script>
 
 </head>
 <body>
 <h1>keyboardNavigation demo</h1>
+
+<div class="checkbox-list" role="region" aria-label="list of checkboxes">
+<div class="list">
+<input type="checkbox" title="this thing">
+<input type="checkbox" title="that thing">
+<input type="checkbox" title="the other thing">
+</div>
+</div>
 
 <div class="listbox" role="region" aria-label="listbox demo: use arrows and first letters to navigate">
 <ul>
@@ -39,12 +46,19 @@
 
 
 
-<script src="jquery.min.js"></script>
-<script src="keyboardNavigation.js"></script>
+<!--<script src="jquery.min.js"></script>-->
+<script src="umd/keyboardNavigation.js"></script>
 <script>
+var checkboxes = document.querySelector(".checkbox-list > .list");
 var list = document.querySelector(".listbox > ul");
 var tree = document.querySelector(".tree > ul");
+
+var navigateCheckboxes = keyboardNavigation (checkboxes, {
+groupSelector: "div", nodeSelector: "input"
+});
+
 var navigateListbox = keyboardNavigation (list);
+
 var navigateTree = keyboardNavigation (tree, {
 multiselect: true,
 type: "tree",
@@ -55,7 +69,7 @@ up: ["ArrowLeft"], down: ["ArrowRight"]
 //navigateListbox().focus();
 //navigateTree().focus();
 
-//alert ("loaded");
+alert ("loaded");
 </script>
 
 </body>
